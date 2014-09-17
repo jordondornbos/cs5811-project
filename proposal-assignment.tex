@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{times}
 \usepackage{fullpage}
+\usepackage{gantt}
 
 \setlength{\parindent}{0in}
 \setlength{\parskip}{0.1in}
@@ -97,29 +98,46 @@ We plan to use Bayesian Belief Networks to compute the probability of a delay.
 % Tell which programming language and environment will be used, and
 % whether you will be using any existing software. Provide a
 % literature review here or where needed. 
-Iphone app, object-c
-Database, MySQL
-Model trainning, Mathlab or write by our own(python or object-c).
-Experiment, check the correctness of the prediction.
 
-Preparation： Two weeks.
-    GUI design, Jordon. 
-    Data collection, Liang
+\subsection{Platform}
+Iphone app, object-c\\
+Database, MySQL\\
+Model trainning, Mathlab or write by our own(python or object-c).\\
+Experiment, check the correctness of the prediction.\\
 
-Main: Both, Four weeks.
-    Model construction : three weeks  
+\subsection{Schedule}
+Preparation: Two weeks.\\
+    GUI design, Jordon. \\
+    Data collection, Liang\\
+
+Main: Both, Four weeks.\\
+    Model construction : three weeks\\  
     we are still not sure to use MathLab to train model or write our
     own program to implement it.
 
-    Model embbeded: one week
+    Model embbeded: one week\\
     Let the model work well in the iphone app.
 
-Integrity test: One week
+Integrity test: One week\\
     Including HCI and Function modification. 
 
-Verification： One Week
+Verification： One Week\\
     Including result analysis and report writing. The experiment is do
     a prediction based on the history data and check the correctness.
+
+\subsection{Arrangement}
+  \begin{gantt}{7}{8}
+    \begin{ganttitle}
+    \numtitle{1}{1}{8}{1}
+    \end{ganttitle}
+    \ganttbar{Gui design}{0}{2}
+    \ganttbar{Data collection}{0}{2}
+    \ganttbarcon[color=cyan]{Model construction}{2}{3}
+    \ganttbarcon{Model embbeded}{5}{1}
+    \ganttbarcon{Integrity test}{6}{1}
+%    \ganttmilestone[color=cyan]{Milestone with color!}{4}
+    \ganttbarcon{Verification}{7}{1}
+  \end{gantt}
 
 
 \section{References}

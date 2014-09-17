@@ -9,7 +9,7 @@
 
 \begin{center}
 {\large CS5811 Project Proposal:}\\
-{\large Predicting Flight Delays Using Bayesian Belief Networks}
+{\large Flight Delay Prediction based on Bayesian Belief Networks}
 
 {\small Jordon Dornbos\\}
 {\small Liang Yan\\}
@@ -20,31 +20,107 @@
 
 \section{Project Overview}
 
-% Provide a paragraph introducing your project. Give a brief description: A more detailed description will be in Section \ref{sec:problem-desc}. Tell what motivates you to solve this problem. 
-% You should have all the sections listed in this document. You may add more sections or change the order of the sections. 
-% Throughout the document, assume a reader who has a good computing background. For example, don't describe what a tree is, but describe what the tree you use will be like.
 
-Our project will analyze data to predict a probability that a flight will be delayed, and perhaps how long the day might be. We are motivated to solve this problem because flight delays are a fairly common thing and there seems to be no good source for predicting this. Flight delays are generally only announced about an hour or so before the flight is set to takeoff and they can change unreliably. Our solution can't guarantee 100\% accuracy for predicting a delay, but it will attempt to better prepare passengers for any possible delays.
+% Provide a paragraph introducing your project. Give a brief
+% description: A more detailed description will be in Section
+% \ref{sec:problem-desc}. Tell what motivates you to solve this
+% problem.  
+% You should have all the sections listed in this document. You may
+% add more sections or change the order of the sections.  
+% Throughout the document, assume a reader who has a good computing
+% background. For example, don't describe what a tree is, but describe
+% what the tree you use will be like. 
+In this project, We are going to develop an iphone app which could
+predict a probability that a flight will be delayed or not in a
+specific future time. Since we do not know how difficuty it will be,
+we first focus on the flight between chicago and newyork, and the
+prediction time is a day. We will extent the limition as development continus.  
+ 
+We are motivated to solve this problem because flight delays are a
+fairly common thing and there seems to be no good source for
+predicting this. Flight delays are generally only announced about an
+hour or so before the flight is set to takeoff and they can change
+unreliably. Our solution can't guarantee 100\% accuracy for predicting
+a delay, but it will attempt to better prepare passengers for any
+possible delays. 
 
 \subsection{Problem description}
 \label{sec:problem-desc}
+% Start with an informal description, then define the problem as
+% formally as possible. Provide background information where
+% needed. Give the algorithms and heuristics that will be used. Give
+% an illustrative example . 
 
-% Start with an informal description, then define the problem as formally as possible. Provide background information where needed. Give the algorithms and heuristics that will be used. Give an illustrative example. 
+I believe almost eveyone has a bad experience about being delayed,
+especially being delayed for something important. According to the
+U.S. Department of Transportation, over 20 percent of all flights
+arrive late. It is a major problem for the airplane company and us. 
 
-\subsection{State of the Art}
+Most of delays are caused by three reasions. First and important, it
+is weather, actually half of delays is caused by weather. Second,
+it could be some mechinical problems, which mostly decided by the plane
+features like the make,the model,the age and so on. Third, it could be
+caused by the schedule problem, if the last flight is delayed, this flight could
+be delayed too. 
 
-% What is the state of the art in terms of solving the problem you described? What contributions do you expect to make with this project to solving this problem and to your learning? Tell what your objective is and how you will measure success.
+
+
+
 
 \subsection{AI techniques}
 
-% Which AI techniques are you planning to use? How is this project relevant to the Advanced AI course?
+% Which AI techniques are you planning to use? How is this project
+% relevant to the Advanced AI course? 
+
+Our mainly prediction is based on these three reasons above. 
 We plan to use Bayesian Belief Networks to compute the probability of a delay.
+
+
+\subsection{State of the Art}
+
+% What is the state of the art in terms of solving the problem you
+% described? What contributions do you expect to make with this
+% project to solving this problem and to your learning? Tell what your
+% objective is and how you will measure success. 
+
+
+
 
 \section{Tasks}
 
-% Define the tasks that you will need to accomplish for your project. Remember to describe the experiments you will carry out. Give a time estimate and tell who will do each task.
-% Use a project description scheme such as a Gantt chart. However, don't spend time or money on project description software unless you already have one that you are familiar with.
-% Tell which programming language and environment will be used, and whether you will be using any existing software. Provide a literature review here or where needed.
+% Define the tasks that you will need to accomplish for your
+% project. Remember to describe the experiments you will carry
+% out. Give a time estimate and tell who will do each task. 
+% Use a project description scheme such as a Gantt chart. However,
+% don't spend time or money on project description software unless you
+% already have one that you are familiar with. 
+% Tell which programming language and environment will be used, and
+% whether you will be using any existing software. Provide a
+% literature review here or where needed. 
+Iphone app, object-c
+Database, MySQL
+Model trainning, Mathlab or write by our own(python or object-c).
+Experiment, check the correctness of the prediction.
+
+Preparation： Two weeks.
+    GUI design, Jordon. 
+    Data collection, Liang
+
+Main: Both, Four weeks.
+    Model construction : three weeks  
+    we are still not sure to use MathLab to train model or write our
+    own program to implement it.
+
+    Model embbeded: one week
+    Let the model work well in the iphone app.
+
+Integrity test: One week
+    Including HCI and Function modification. 
+
+Verification： One Week
+    Including result analysis and report writing. The experiment is do
+    a prediction based on the history data and check the correctness.
+
 
 \section{References}
 

@@ -1,35 +1,55 @@
-\documentclass{article}
-\usepackage{enumerate}
+\documentclass[12pt]{article}
+\usepackage{times}
 \usepackage{fullpage}
-\usepackage{tikz-qtree}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.1in}
 
 \begin{document}
-\title{CS5811 Project Proposal: \\
-The Title of Your Awesome Project}
-\author{Jordon Dornbos \\
-Liang Yan}
-\maketitle
 
-\section {Project Overview}Provide a paragraph introducing your project. Give a brief description: A more detailed description will be in Section 1.1. Tell what motivates you to solve this problem. \\ \\You should have all the sections listed in this document. You may add more sections or change the order of the sections. \\ \\Throughout the document, assume a reader who has a good computing background. For example, don?t describe what a tree is, but describe what the tree you use will be like.
+\begin{center}
+{\large CS5811 Project Proposal:}\\
+{\large Predicting Flight Delays Using Bayesian Belief Networks}
 
-\subsection {Problem description}Start with an informal description, then define the problem as formally as possible. Provide back- ground information where needed. Give the algorithms and heuristics that will be used. Give an illustrative example.
+{\small Jordon Dornbos\\}
+{\small Liang Yan\\}
 
-\subsection {State of the Art}
-What is the state of the art in terms of solving the problem you described? What contributions do
-you expect to make with this project to solving this problem and to your learning? Tell what your
-objective is and how you will measure success.
+{\small September 18, 2014\\}
 
-\subsection {AI techniques}
-Which AI techniques are you planning to use? How is this project relevant to the Advanced AI
-course?
+\end{center}
 
-\section {Tasks}
-Define the tasks that you will need to accomplish as part of your project. Remember to describe the experiments you will carry out. Give a time estimate and tell who will do each task. \\ \\
-Use a project description scheme such as a Gantt chart. However, don?t spend time or money on project description software unless you have one that you are familiar with. \\ \\
-Tell which programming language and environment will be used, and whether you will be using
-any existing software. Provide a literature review here or where needed.
+\section{Project Overview}
 
-\section {References}
-Give a list of references. There is no limit on the number of references but cite only relevant publications.
+% Provide a paragraph introducing your project. Give a brief description: A more detailed description will be in Section \ref{sec:problem-desc}. Tell what motivates you to solve this problem. 
+% You should have all the sections listed in this document. You may add more sections or change the order of the sections. 
+% Throughout the document, assume a reader who has a good computing background. For example, don't describe what a tree is, but describe what the tree you use will be like.
+
+Our project will analyze data to predict a probability that a flight will be delayed, and perhaps how long the day might be. We are motivated to solve this problem because flight delays are a fairly common thing and there seems to be no good source for predicting this. Flight delays are generally only announced about an hour or so before the flight is set to takeoff and they can change unreliably. Our solution can't guarantee 100\% accuracy for predicting a delay, but it will attempt to better prepare passengers for any possible delays.
+
+\subsection{Problem description}
+\label{sec:problem-desc}
+
+% Start with an informal description, then define the problem as formally as possible. Provide background information where needed. Give the algorithms and heuristics that will be used. Give an illustrative example. 
+
+\subsection{State of the Art}
+
+% What is the state of the art in terms of solving the problem you described? What contributions do you expect to make with this project to solving this problem and to your learning? Tell what your objective is and how you will measure success.
+
+\subsection{AI techniques}
+
+% Which AI techniques are you planning to use? How is this project relevant to the Advanced AI course?
+We plan to use Bayesian Belief Networks to compute the probability of a delay.
+
+\section{Tasks}
+
+% Define the tasks that you will need to accomplish for your project. Remember to describe the experiments you will carry out. Give a time estimate and tell who will do each task.
+% Use a project description scheme such as a Gantt chart. However, don't spend time or money on project description software unless you already have one that you are familiar with.
+% Tell which programming language and environment will be used, and whether you will be using any existing software. Provide a literature review here or where needed.
+
+\section{References}
+
+% Give a list of references. There is no upper or lower limit on the number of references but cite only relevant publications.
+
 
 \end{document}
+

@@ -21,7 +21,6 @@
 
 \section{Project Overview}
 
-
 % Provide a paragraph introducing your project. Give a brief
 % description: A more detailed description will be in Section
 % \ref{sec:problem-desc}. Tell what motivates you to solve this
@@ -55,19 +54,44 @@ possible delays.
 
 I believe that almost everyone has had a bad experience with a flight being 
 delayed, especially being delayed for something important. According to the
-U.S. Department of Transportation, over 20 percent of all flights arrive late.\cite{4732894} 
+U.S. Department of Transportation, over 20 percent of all flights
+arrive late.\cite{4732894}  
 It is a major problem for the airplane company and also for us, passengers. 
 
 Most of delays are caused by three reasons. First, and most important, is 
-weather. Half of delays are actually caused by weather\cite{5655493}. Second, it could 
-be some mechanical problem, which is mostly decided by the plane
+weather. Half of delays are actually caused by
+weather\cite{5655493}. Second, it could  
+be some mechanical problem\cite{6891588}, which is mostly decided by the plane
 features such as the make, model, age and so on. Third, it could be
 caused by a scheduling problem. If the last flight is delayed, this flight 
-could be delayed also. \cite{6891588}
+could be delayed also. \cite{5}
 
+\subsection{State of the Art}
 
+% What is the state of the art in terms of solving the problem you
+% described? What contributions do you expect to make with this
+% project to solving this problem and to your learning? Tell what your
+% objective is and how you will measure success. 
 
+Dr. Rebollo and Balakrishnan\cite{5} proposed amodel uses Random Forest (RF)
+algorithms, based on temporal and spatial delay, also the local
+arrival or departure delay situation, they proposed this new
+network delay prediction model. The predictive performance of the model is
+evaluated using the 100 most delayed OD pairs in the NAS:
+the results show that given a 2-hour prediction horizon, the
+average test error across these 100 OD(origin-destination) pairs is 19\% when
+classifying delays as above or below 60 min. 
 
+Dr. Lu and his team predict flight delays by creating a decision tree
+from a large database. \cite{4732894}This solution is good at making a
+simple tree to follow in order to  make predictions, but a new tree needs to be
+created once more data is collected. 
+Using neural networks, however, the graph stays the same, the weights are just
+learned over time. Our solution will be learning how each input
+parameter affects the delay probability. This should therefor be more
+accurate than creating a graph  
+of the most likely outcome based on a series of tests, such as the decision tree 
+provides. 
 
 \subsection{AI techniques}
 
@@ -88,16 +112,6 @@ of each input, and should result in very accurate predictions.
 Keeping a record of past flight information in our database will also allow us
 to try out different parameters for the neural network. We can modify parameters,
 train the network, and keep the parameters that performed best.
-
-\subsection{State of the Art}
-
-% What is the state of the art in terms of solving the problem you
-% described? What contributions do you expect to make with this
-% project to solving this problem and to your learning? Tell what your
-% objective is and how you will measure success. 
-
-
-
 
 \section{Tasks}
 
@@ -152,12 +166,10 @@ Verification: Both\\
     \ganttbarcon{Verification}{7}{1}
   \end{gantt}
 
-
 %\section{References}
 % Give a list of references. There is no upper or lower limit on the number of references but cite only relevant publications.
 \bibliographystyle{plain}
 \bibliography{proposal-assignment}
-
 
 \end{document}
 

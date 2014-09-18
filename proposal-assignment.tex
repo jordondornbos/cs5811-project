@@ -74,11 +74,20 @@ could be delayed also. \cite{6891588}
 % Which AI techniques are you planning to use? How is this project
 % relevant to the Advanced AI course? 
 
-Our mainly prediction is based on these three reasons above. 
-We plan to use Bayesian Belief Networks to compute the probability of a delay.
+We plan to use neural network to compute the probability of a delay. The neural
+network will have multiple inputs describing the the three common issues
+mentioned above. This includes weather data, information about the plane itself,
+and the previous flight as well. 
 
+We will train the neural network by feeding it data on current flights,
+and back-propagating the correct value once the flight is over. We will capture
+data on flights every day and add it to our database. This database will be used
+to continually train the neural network. Over time it will learn the importance 
+of each input, and should result in very accurate predictions.
 
-
+Keeping a record of past flight information in our database will also allow us
+to try out different parameters for the neural network. We can modify parameters,
+train the network, and keep the parameters that performed best.
 
 \subsection{State of the Art}
 

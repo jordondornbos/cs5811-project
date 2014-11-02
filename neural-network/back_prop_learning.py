@@ -13,7 +13,7 @@ import numpy as np
 iteration_count = 0
 
 
-def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights_loaded=False, verbose=False):
+def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights=None, verbose=False):
     """Backpropagation algorithm for learning in multilayer networks.
 
     Args:
@@ -21,7 +21,7 @@ def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights
         network: A multilayer network with L layers, weights W(j,i), activation function g.
         alpha: The learning rate.
         iteration_max: The maximum amount of iterations to perform.
-        weights_loaded: Whether or not weights have already been loaded into the network.
+        weights: Starting weights to load into the network.
         verbose: Whether or not to print data values as the network learns.
 
     Returns:
@@ -30,7 +30,10 @@ def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights
 
     delta = [0] * network.num_nodes()   # a vector of errors, indexed by network node
 
-    if not weights_loaded:
+    # load weights if given, otherwise randomize weights
+    if weights:
+        network.load_weights(weights)
+    else:
         randomize_weights(network, verbose=verbose)
 
     while True:
@@ -179,70 +182,3 @@ def stop_learning(iteration_max):
 
     # otherwise, keep going
     return False
-
-
-def learn_and_plot(examples, network, min, max, step, alpha=0.5, iteration_max=1000, weights_loaded=False,
-                   verbose=False, title='Unknown Function'):
-    """Function to plot the network during the learning process. I based this code off of examples from the
-    matplotlib documentation provided online.
-
-    Args:
-        examples: A set of examples, each with input vector x and output vector y.
-        network: A multilayer network with L layers, weights W(j,i), activation function g.
-        min: The min x/y coordinate to graph to.
-        max: The max x/y coordinate to graph to.
-        step: The x/y step to graph.
-        alpha: The learning rate.
-        iteration_max: The maximum amount of iterations to perform.
-        weights_loaded: Whether or not weights have already been loaded into the network.
-        verbose: Whether or not to print data values as the network learns.
-        title: The name of the function being learned.
-
-    Returns:
-        A hypothesis neural network.
-    """
-
-    delta = [0] * network.num_nodes()   # a vector of errors, indexed by network node
-
-    if not weights_loaded:
-        randomize_weights(network, verbose=verbose)
-
-    # set up the plot
-    plt.ion()
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    x = y = np.arange(min, max, step)
-    x_grid, y_grid = np.meshgrid(x, y)
-
-    # do learning
-    learn_loop(delta, examples, network, alpha)
-    hypothesis = hypothesis_network.HypothesisNetwork(network)
-
-    zs = np.array([(hypothesis.guess([x, y])[0]) for x, y in zip(np.ravel(x_grid), np.ravel(y_grid))])
-    z_grid = zs.reshape(x_grid.shape)
-
-    # display the plot
-    ax.plot_surface(x_grid, y_grid, z_grid)
-    fig.suptitle('Neural Network Learning - ' + title, fontsize=14)
-    plt.show()
-
-    step = iteration_max / 20
-    for i in range(20):
-        # do learning
-        for j in range(step):
-            learn_loop(delta, examples, network, alpha)
-
-        hypothesis = hypothesis_network.HypothesisNetwork(network)
-
-        # update the plot
-        zs = np.array([(hypothesis.guess([x, y])[0]) for x, y in zip(np.ravel(x_grid), np.ravel(y_grid))])
-        z_grid = zs.reshape(x_grid.shape)
-        ax.clear()
-        ax.plot_surface(x_grid, y_grid, z_grid)
-        plt.draw()
-
-    # display the final plot
-    plt.ioff()
-    plt.show()
-
-    return hypothesis

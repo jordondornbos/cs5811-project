@@ -33,26 +33,3 @@ class HypothesisNetwork(object):
             ret.append(output.nodes[i].output)
 
         return ret
-
-    def plot(self, min, max, step, title='Unknown Function'):
-        """Function to plot the network. I based this code off of examples from the matplotlib documentation
-        provided online.
-
-        Args:
-            min: The min x/y coordinate to graph to.
-            max: The max x/y coordinate to graph to.
-            step: The x/y step to graph.
-        """
-
-        # set up the plot
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        x = y = np.arange(min, max, step)
-        x_grid, y_grid = np.meshgrid(x, y)
-        zs = np.array([(self.guess([x, y])[0]) for x, y in zip(np.ravel(x_grid), np.ravel(y_grid))])
-        z_grid = zs.reshape(x_grid.shape)
-
-        # display the plot
-        ax.plot_surface(x_grid, y_grid, z_grid)
-        fig.suptitle('Neural Network Learning - ' + title, fontsize=14)
-        plt.show()

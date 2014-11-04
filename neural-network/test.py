@@ -66,7 +66,7 @@ def get_data(filename):
             data.append(example.Example(x,y))
 
         else:
-            print "Found a canceled flight"
+            print 'Found a canceled flight'
 
     return data
 
@@ -84,12 +84,16 @@ def main():
 
     # check how accurate the network is by comparing it to the verification data
     print 'Testing accuracy'
+    total_diff = 0.0
+    num_data = 0
     for test in verification_data:
         output = network.guess(test.x)[0]
         diff = abs(test.y - output)
-        print 'Difference was ' + str(diff)
+        total_diff += diff
+        num_data += 1
 
-    print 'Done.'
+    average_error = total_diff / num_data
+    print 'Average error was: ' + str(average_error)
 
 
 if __name__ == '__main__':

@@ -26,32 +26,70 @@ def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidde
     return network
 
 
-def main():
-    # array of training data
-    examples = []
+def get_data(filename):
+    # array of Examples
+    data = []
 
     # open the data file
-    data = open('examples.data')
+    file = open(filename)
 
-    # convert data into Example objects
-    for line in data:
+    # skip the header
+    next(file)
+
+    # convert data file into Example objects
+    for line in file:
         line = re.sub('[\n]', '', line)  # delete newline characters
 
-        # split the data up into x and y arrays
+        # split the data up
         values = line.split(',')
-        split = len(values) - 1
-        x = []
-        y = []
-        for val in values[0:split]:
-            x.append(float(val))
-        for val in values[split:len(values)]:
-            y.append(float(val))
 
-        # add the Example object
-        examples.append(example.Example(x,y))
+        if values[21] != 1.0:
+            x = []
+            y = []
 
+            try:
+                x.append(float(values[1]))
+                x.append(float(values[2]))
+                x.append(float(values[3]))
+                x.append(float(values[5]))
+                # x.append(float(values[8]))
+                x.append(float(values[9]))
+                # x.append(float(values[10]))
+                # x.append(float(values[16]))
+                # x.append(float(values[17]))
+                y.append(float(values[15]))
+
+            except ValueError:
+                continue
+
+            # add the Example object
+            data.append(example.Example(x,y))
+
+        else:
+            print "Found a canceled flight"
+
+    return data
+
+
+def main():
+    # get training data and verification data
+    print 'Loading data'
+    training_data = get_data('../data/flight/2001_subset.csv')
+    verification_data = get_data('../data/flight/2007_subset.csv')
+
+    # train the network with the training set
+    print 'Training network'
     weights = None
-    network = train(examples, 0.5, 1000, 2, 3, weights)
+    network = train(training_data, 0.5, 1000, 2, 3, weights, verbose=True)
+
+    # check how accurate the network is by comparing it to the verification data
+    print 'Testing accuracy'
+    for test in verification_data:
+        output = network.guess(test.x)[0]
+        diff = abs(test.y - output)
+        print 'Difference was ' + str(diff)
+
+    print 'Done.'
 
 
 if __name__ == '__main__':

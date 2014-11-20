@@ -5,9 +5,6 @@ __author__ = "Jordon Dornbos"
 import random
 import hypothesis_network
 import multilayer_network
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 iteration_count = 0

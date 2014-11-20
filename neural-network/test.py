@@ -10,20 +10,21 @@ import re
 
 def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
     # create the network
-    print 'Creating neural network'
+    print 'Creating neural network...'
     network = multilayer_network.MultilayerNetwork(2, num_hidden_layers, num_nodes_per_hidden_layer, 1)
 
     # do learning
-    print 'Training neural network'
-    back_prop_learning.back_prop_learning(examples, network, alpha=alpha, iteration_max=iteration_max, weights=weights,
-                                          verbose=verbose)
+    print 'Training neural network...'
+    hypothesis_network = back_prop_learning.back_prop_learning(examples, network, alpha=alpha,
+                                                               iteration_max=iteration_max, weights=weights,
+                                                               verbose=verbose)
 
     # print out the weights learned
-    print 'Weights learned:'
-    network.print_weights()
+    print '\nWeights learned:'
+    hypothesis_network.network.print_weights()
     print ''
 
-    return network
+    return hypothesis_network
 
 
 def get_data(filename):
@@ -57,7 +58,10 @@ def get_data(filename):
                 # x.append(float(values[10]))
                 # x.append(float(values[16]))
                 # x.append(float(values[17]))
-                y.append(float(values[15]))
+                if float(values[15]) > 15:
+                    y.append(1.0)
+                else:
+                    y.append(0.0)
 
             except ValueError:
                 continue
@@ -73,22 +77,22 @@ def get_data(filename):
 
 def main():
     # get training data and verification data
-    print 'Loading data'
+    print 'Loading data...'
     training_data = get_data('../data/flight/2001_subset.csv')
     verification_data = get_data('../data/flight/2007_subset.csv')
 
     # train the network with the training set
-    print 'Training network'
     weights = None
-    network = train(training_data, 0.5, 1000, 2, 3, weights, verbose=True)
+    network = train(training_data, 0.5, 1000, 3, 5, weights, verbose=True)
 
     # check how accurate the network is by comparing it to the verification data
-    print 'Testing accuracy'
+    print 'Testing accuracy...'
     total_diff = 0.0
     num_data = 0
     for test in verification_data:
         output = network.guess(test.x)[0]
-        diff = abs(test.y - output)
+        diff = abs(test.y[0] - output)
+        # print 'Correct output: ' + str(test.y[0]) + ', Our output: ' + str(output) + ', Error: ' + str(diff)
         total_diff += diff
         num_data += 1
 

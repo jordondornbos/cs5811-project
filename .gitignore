@@ -5,3 +5,4 @@ proposal-assignment.bbl
 proposal-assignment.blg
 *.pyc
 neural-network/.idea/
+/data/weather

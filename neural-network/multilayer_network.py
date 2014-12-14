@@ -4,6 +4,7 @@ __author__ = "Jordon Dornbos"
 
 import layer
 import math
+import logging
 
 
 class MultilayerNetwork(object):
@@ -107,23 +108,25 @@ class MultilayerNetwork(object):
                     self.get_node_in_layer(l, n).weights[w] = weights[i]
                     i += 1
 
-    def print_weights(self, round=False):
-        """Method to print the weights in the network.
+    def weight_string(self, round=False):
+        """Method to return a string representation of the weights in the network.
 
         Args:
             round: Whether or not to round the values to the third decimal place.
         """
 
-        print "[",
+        weight_string = '['
         for l in range(1, self.num_layers()):
             for n in range(self.get_layer(l).num_nodes):
                 weights = self.get_node_in_layer(l, n).weights
                 for w in range(len(weights)):
                     if round:
-                        print '{0:.3f}'.format(weights[w]),
+                        weight_string += ' {0:.3f} '.format(weights[w])
                     else:
-                        print weights[w],
-        print ']'
+                        weight_string += ' {0} '.format(weights[w])
+        weight_string += ']'
+
+        return weight_string
 
 
 def sigmoid(x):

@@ -14,22 +14,18 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 
 def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
     # create the network
-    print 'Creating neural network...'
     logging.info('Creating neural network...')
     network = multilayer_network.MultilayerNetwork(len(examples[0].x), num_hidden_layers, num_nodes_per_hidden_layer,
                                                    len(examples[0].y))
 
     # do learning
-    print 'Training neural network...'
     logging.info('Training neural network...')
     hypothesis_network = back_prop_learning.back_prop_learning(examples, network, alpha=alpha,
                                                                iteration_max=iteration_max, weights=weights,
                                                                verbose=verbose)
 
     # print out the weights learned
-    print '\nWeights learned:'
-    hypothesis_network.network.print_weights()
-    print ''
+    logging.info('Weights learned: {0}'.format(hypothesis_network.network.weight_string()))
 
     return hypothesis_network
 
@@ -158,7 +154,6 @@ def shuffle(training_data):
 
 def main():
     # get training data and verification data
-    print 'Loading data...'
     logging.info('Loading data...')
     normalized_data = get_normalized_data('../data/normalized/2004_output.txt')
     training_data = get_data('../data/flight/2004_subset.csv', normalized_data[0], normalized_data[1],
@@ -173,7 +168,6 @@ def main():
     network = train(training_data, 0.3, 10000, 1, 8, weights, verbose=True)
 
     # check how accurate the network is by comparing it to the verification data
-    print 'Testing accuracy...'
     logging.info('Testing accuracy...')
     num_delay_correct = 0
     num_delay_incorrect = 0
@@ -182,7 +176,7 @@ def main():
     for test in verification_data:
         output = network.guess(test.x)[0]
         actual = test.y[0]
-        logging.info('Output: {0:.3f} Actual: {1}'.format(output, actual))
+        # logging.info('Output: {0:.3f} Actual: {1}'.format(output, actual))
         if output > 0.5:
             output = 1.0
         else:
@@ -199,16 +193,14 @@ def main():
             else:
                 num_ontime_incorrect += 1
 
-    logging.info('Number of correct delayed flights was: ' + str(num_delay_correct))
-    logging.info('Number of incorrrect delay flights was: ' + str(num_delay_incorrect))
-    logging.info('Number of correct ontime flights was: ' + str(num_ontime_correct))
-    logging.info('Number of incorrect ontime flights was: ' + str(num_ontime_incorrect))
+    logging.info('Number of correct delayed flight predictions was: ' + str(num_delay_correct))
+    logging.info('Number of incorrrect delay flight predictions was: ' + str(num_delay_incorrect))
+    logging.info('Number of correct ontime flight predictions was: ' + str(num_ontime_correct))
+    logging.info('Number of incorrect ontime flight predictions was: ' + str(num_ontime_incorrect))
 
     average_error = float(num_delay_incorrect + num_ontime_incorrect) / \
                     (num_delay_correct + num_delay_incorrect + num_ontime_correct + num_ontime_incorrect)
-    print 'Average accuracy was: {0:.3f}'.format(1.0 - average_error)
     logging.info('Average accuracy was: {0:.3f}'.format(1.0 - average_error))
-    print 'Average error was: {0:.3f}'.format(average_error)
     logging.info('Average error was: {0:.3f}'.format(average_error))
 
 

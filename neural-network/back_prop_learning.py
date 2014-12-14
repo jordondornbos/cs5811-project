@@ -35,8 +35,10 @@ def back_prop_learning(examples, network, alpha=0.3, iteration_max=5000000, weig
     for iteration in range(iteration_max):
         new_alpha = alpha * (1 - (float(iteration) / iteration_max))
         learn_loop(delta, examples, network, new_alpha)
-        logging.info('Neural network learning loop {0} of {1} with alpha: {2}'.format(iteration, iteration_max,
-                                                                                      new_alpha))
+
+        if verbose:
+            logging.info('Neural network learning loop {0} of {1} with alpha: {2}'.format(iteration, iteration_max,
+                                                                                          new_alpha))
 
     return hypothesis_network.HypothesisNetwork(network)
 
@@ -55,8 +57,7 @@ def randomize_weights(network, verbose=False, round=False):
                 network.get_node_in_layer(l, n).weights[w] = random.random()
 
     if verbose:
-        print 'Randomized weights:'
-        network.print_weights(round)
+        logging.info('Randomized weights: {0}'.format(network.weight_string(round)))
 
 
 def learn_loop(delta, examples, network, alpha):

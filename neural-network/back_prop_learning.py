@@ -7,9 +7,6 @@ import hypothesis_network
 import multilayer_network
 import logging
 
-LOG_FILENAME = 'neural-network.log'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
-
 
 def back_prop_learning(examples, network, alpha=0.3, iteration_max=5000000, weights=None, verbose=False):
     """Backpropagation algorithm for learning in multilayer networks.
@@ -35,14 +32,11 @@ def back_prop_learning(examples, network, alpha=0.3, iteration_max=5000000, weig
         randomize_weights(network, verbose=verbose)
 
     # keep learning until stopping criterion is satisfied
-    iteration_count = 0
-    while iteration_count != iteration_max:
-        learn_loop(delta, examples, network, alpha)
-
-        iteration_count += 1
-        logging.info('Neural network learning loop {0} of {1}'.format(iteration_count, iteration_max))
-
-        # TODO more stopping criteria
+    for iteration in range(iteration_max):
+        new_alpha = alpha * (1 - (float(iteration) / iteration_max))
+        learn_loop(delta, examples, network, new_alpha)
+        logging.info('Neural network learning loop {0} of {1} with alpha: {2}'.format(iteration, iteration_max,
+                                                                                      new_alpha))
 
     return hypothesis_network.HypothesisNetwork(network)
 
@@ -134,7 +128,7 @@ def delta_propagation(delta, network):
         delta: A list of all the delta values for the network.
         network: A multilayer network with L layers, weights W(j,i), activation function g.
     """
-    # TODO check
+
     for l in range(network.num_layers() - 2, 0, -1):
         for n in range(network.get_layer(l).num_nodes):
             summation = 0.0
@@ -155,7 +149,7 @@ def update_weights(delta, network, alpha):
         network: A multilayer network with L layers, weights W(j,i), activation function g.
         alpha: The learning rate.
     """
-    # TODO check
+
     for l in range(1, network.num_layers()):
         for n in range(network.get_layer(l).num_nodes):
             # adjust the weights

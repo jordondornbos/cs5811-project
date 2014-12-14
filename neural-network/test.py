@@ -9,7 +9,7 @@ import re
 import logging
 
 LOG_FILENAME = 'neural-network.log'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 
 
 def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
@@ -119,7 +119,7 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
                     y.append(0.0)
 
             except ValueError:
-                logging.error('Error adding ' + str(values))
+                logging.debug('Could not add {0}'.format(values))
                 continue
 
             # add the Example object
@@ -127,7 +127,7 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
             data.append(example.Example(x,y))
 
         else:
-            logging.info('Found a canceled flight')
+            logging.debug('Found a canceled flight')
 
     return data
 
@@ -182,7 +182,7 @@ def main():
     for test in verification_data:
         output = network.guess(test.x)[0]
         actual = test.y[0]
-        logging.info('Output: {0} Actual: {1}'.format(output, actual))
+        logging.info('Output: {0:.3f} Actual: {1}'.format(output, actual))
         if output > 0.5:
             output = 1.0
         else:
@@ -206,10 +206,10 @@ def main():
 
     average_error = float(num_delay_incorrect + num_ontime_incorrect) / \
                     (num_delay_correct + num_delay_incorrect + num_ontime_correct + num_ontime_incorrect)
-    print 'Average accuracy was: ' + str(1.0 - average_error)
-    logging.info('Average accuracy was: ' + str(1.0 - average_error))
-    print 'Average error was: ' + str(average_error)
-    logging.info('Average error was: ' + str(average_error))
+    print 'Average accuracy was: {0:.3f}'.format(1.0 - average_error)
+    logging.info('Average accuracy was: {0:.3f}'.format(1.0 - average_error))
+    print 'Average error was: {0:.3f}'.format(average_error)
+    logging.info('Average error was: {0:.3f}'.format(average_error))
 
 
 if __name__ == '__main__':

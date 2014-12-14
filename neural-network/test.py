@@ -12,22 +12,22 @@ LOG_FILENAME = 'neural-network.log'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 
 
-def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
-    # create the network
-    logging.info('Creating neural network...')
-    network = multilayer_network.MultilayerNetwork(len(examples[0].x), num_hidden_layers, num_nodes_per_hidden_layer,
-                                                   len(examples[0].y))
+def build_map(file, break_word=''):
+    map = {}
 
-    # do learning
-    logging.info('Training neural network...')
-    hypothesis_network = back_prop_learning.back_prop_learning(examples, network, alpha=alpha,
-                                                               iteration_max=iteration_max, weights=weights,
-                                                               verbose=verbose)
+    # put data in maps
+    for line in file:
+        if break_word in line and break_word is not '':
+            break
 
-    # print out the weights learned
-    logging.info('Weights learned: {0}'.format(hypothesis_network.network.weight_string()))
+        line = re.sub('[\n]', '', line)  # delete newline characters
+        values = line.split(',')  # split the data up
 
-    return hypothesis_network
+        # map[value] = Total Flights, Delayed Flights, Rate
+        logging.debug('Putting [{0} = {1}, {2}, {3}] into the map'.format(values[0], values[1], values[2], values[3]))
+        map[values[0]] = [values[1], values[2], values[3]]
+
+    return map
 
 
 def get_normalized_data(filename):
@@ -48,24 +48,6 @@ def get_normalized_data(filename):
     airports = build_map(file)
 
     return [time, distance, carrier, airports]
-
-
-def build_map(file, break_word=''):
-    map = {}
-
-    # put data in maps
-    for line in file:
-        if break_word in line and break_word is not '':
-            break
-
-        line = re.sub('[\n]', '', line)  # delete newline characters
-        values = line.split(',')  # split the data up
-
-        # map[value] = Total Flights, Delayed Flights, Rate
-        logging.debug('Putting [{0} = {1}, {2}, {3}] into the map'.format(values[0], values[1], values[2], values[3]))
-        map[values[0]] = [values[1], values[2], values[3]]
-
-    return map
 
 
 def get_data(filename, time_map, distance_map, carrier_map, airport_map):
@@ -128,46 +110,25 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
     return data
 
 
-def shuffle(training_data):
-    shuffled = []
+def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
+    # create the network
+    logging.info('Creating neural network...')
+    network = multilayer_network.MultilayerNetwork(len(examples[0].x), num_hidden_layers, num_nodes_per_hidden_layer,
+                                                   len(examples[0].y))
 
-    pos = 0
-    neg = 0
-    data = len(training_data)
-    pick_pos = True
-    while pos < data and neg < data:
-        if pick_pos:
-            if training_data[pos].y[0] == 1.0:
-                logging.debug('Adding positive set')
-                shuffled.append(training_data[pos])
-                pick_pos = False
-            pos += 1
-        else:
-            if training_data[neg].y[0] == 0.0:
-                logging.debug('Adding negative set')
-                shuffled.append(training_data[neg])
-                pick_pos = True
-            neg += 1
+    # do learning
+    logging.info('Training neural network...')
+    hypothesis_network = back_prop_learning.back_prop_learning(examples, network, alpha=alpha,
+                                                               iteration_max=iteration_max, weights=weights,
+                                                               verbose=verbose)
 
-    return shuffled
+    # print out the weights learned
+    logging.info('Weights learned: {0}'.format(hypothesis_network.network.weight_string()))
+
+    return hypothesis_network
 
 
-def main():
-    # get training data and verification data
-    logging.info('Loading data...')
-    normalized_data = get_normalized_data('../data/normalized/2004_output.txt')
-    training_data = get_data('../data/flight/2004_subset.csv', normalized_data[0], normalized_data[1],
-                             normalized_data[2], normalized_data[3])
-    normalized_data = get_normalized_data('../data/normalized/2007_output.txt')
-    verification_data = get_data('../data/flight/2007_subset.csv', normalized_data[0], normalized_data[1],
-                                 normalized_data[2], normalized_data[3])
-
-    # train the network with the training set
-    weights = None
-    training_data = shuffle(training_data)
-    network = train(training_data, 0.3, 10000, 1, 8, weights, verbose=True)
-
-    # check how accurate the network is by comparing it to the verification data
+def test(network, verification_data):
     logging.info('Testing accuracy...')
     num_delay_correct = 0
     num_delay_incorrect = 0
@@ -202,6 +163,48 @@ def main():
                     (num_delay_correct + num_delay_incorrect + num_ontime_correct + num_ontime_incorrect)
     logging.info('Average accuracy was: {0:.3f}'.format(1.0 - average_error))
     logging.info('Average error was: {0:.3f}'.format(average_error))
+
+
+def shuffle(training_data):
+    shuffled = []
+
+    pos = 0
+    neg = 0
+    data = len(training_data)
+    pick_pos = True
+    while pos < data and neg < data:
+        if pick_pos:
+            if training_data[pos].y[0] == 1.0:
+                logging.debug('Adding positive set')
+                shuffled.append(training_data[pos])
+                pick_pos = False
+            pos += 1
+        else:
+            if training_data[neg].y[0] == 0.0:
+                logging.debug('Adding negative set')
+                shuffled.append(training_data[neg])
+                pick_pos = True
+            neg += 1
+
+    return shuffled
+
+
+def main():
+    # get training data and verification data
+    logging.info('Loading data...')
+    normalized_data = get_normalized_data('../data/normalized/2004_output.txt')
+    training_data = get_data('../data/flight/2004_subset.csv', normalized_data[0], normalized_data[1],
+                             normalized_data[2], normalized_data[3])
+    training_data = shuffle(training_data)
+    normalized_data = get_normalized_data('../data/normalized/2007_output.txt')
+    verification_data = get_data('../data/flight/2007_subset.csv', normalized_data[0], normalized_data[1],
+                                 normalized_data[2], normalized_data[3])
+
+    for layer in range(1, 3):
+        for nodes in range(3, 9, 2):
+            weights = None
+            network = train(training_data, 0.3, 10000, layer, nodes, weights)
+            test(network, verification_data)
 
 
 if __name__ == '__main__':

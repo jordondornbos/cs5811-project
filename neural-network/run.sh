@@ -1,1 +1,1 @@
-python test.py > output.txt &
+python test.py &

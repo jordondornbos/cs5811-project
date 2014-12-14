@@ -15,10 +15,13 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
     # create the network
     print 'Creating neural network...'
-    network = multilayer_network.MultilayerNetwork(2, num_hidden_layers, num_nodes_per_hidden_layer, 1)
+    logging.info('Creating neural network...')
+    network = multilayer_network.MultilayerNetwork(len(examples[0].x), num_hidden_layers, num_nodes_per_hidden_layer,
+                                                   len(examples[0].y))
 
     # do learning
     print 'Training neural network...'
+    logging.info('Training neural network...')
     hypothesis_network = back_prop_learning.back_prop_learning(examples, network, alpha=alpha,
                                                                iteration_max=iteration_max, weights=weights,
                                                                verbose=verbose)
@@ -63,7 +66,7 @@ def build_map(file, break_word=''):
         values = line.split(',')  # split the data up
 
         # map[value] = Total Flights, Delayed Flights, Rate
-        logging.debug('Putting [{0} = {1}, {2}, {3} into the map]'.format(values[0], values[1], values[2], values[3]))
+        logging.debug('Putting [{0} = {1}, {2}, {3}] into the map'.format(values[0], values[1], values[2], values[3]))
         map[values[0]] = [values[1], values[2], values[3]]
 
     return map
@@ -92,18 +95,20 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
             y = []
 
             try:
-                month = float(values[1])
-                day = float(values[2])
-                day_of_week = float(values[3])
-                dept_time = float(values[5])
-                carrier = carrier_map[values[8]][2]
+                dept_time = float(time_map[values[5][:-2]][2])
+                carrier = float(carrier_map[values[8]][2])
                 delay = float(values[15])
-                airport = airport_map[values[16]][2]
+                airport = float(airport_map[values[16]][2])
                 distance = float(values[18])
+                if distance < 300:
+                    distance = float(distance_map['0'][2])
+                elif 300 <= distance < 600:
+                    distance = float(distance_map['1'][2])
+                elif 600 <= distance < 900:
+                    distance = float(distance_map['2'][2])
+                else:
+                    distance = float(distance_map['3'][2])
 
-                x.append(month)
-                x.append(day)
-                x.append(day_of_week)
                 x.append(dept_time)
                 x.append(carrier)
                 x.append(airport)
@@ -114,6 +119,7 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
                     y.append(0.0)
 
             except ValueError:
+                logging.error('Error adding ' + str(values))
                 continue
 
             # add the Example object
@@ -121,14 +127,39 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
             data.append(example.Example(x,y))
 
         else:
-            logging.debug('Found a canceled flight')
+            logging.info('Found a canceled flight')
 
     return data
+
+
+def shuffle(training_data):
+    shuffled = []
+
+    pos = 0
+    neg = 0
+    data = len(training_data)
+    pick_pos = True
+    while pos < data and neg < data:
+        if pick_pos:
+            if training_data[pos].y[0] == 1.0:
+                logging.debug('Adding positive set')
+                shuffled.append(training_data[pos])
+                pick_pos = False
+            pos += 1
+        else:
+            if training_data[neg].y[0] == 0.0:
+                logging.debug('Adding negative set')
+                shuffled.append(training_data[neg])
+                pick_pos = True
+            neg += 1
+
+    return shuffled
 
 
 def main():
     # get training data and verification data
     print 'Loading data...'
+    logging.info('Loading data...')
     normalized_data = get_normalized_data('../data/normalized/2004_output.txt')
     training_data = get_data('../data/flight/2004_subset.csv', normalized_data[0], normalized_data[1],
                              normalized_data[2], normalized_data[3])
@@ -138,28 +169,47 @@ def main():
 
     # train the network with the training set
     weights = None
-    logging.info('Beginning network training')
-    network = train(training_data, 0.5, 1000, 3, 5, weights, verbose=True)
+    training_data = shuffle(training_data)
+    network = train(training_data, 0.3, 10000, 1, 8, weights, verbose=True)
 
     # check how accurate the network is by comparing it to the verification data
     print 'Testing accuracy...'
-    total_diff = 0.0
-    num_data = 0
+    logging.info('Testing accuracy...')
+    num_delay_correct = 0
+    num_delay_incorrect = 0
+    num_ontime_correct = 0
+    num_ontime_incorrect = 0
     for test in verification_data:
         output = network.guess(test.x)[0]
+        actual = test.y[0]
+        logging.info('Output: {0} Actual: {1}'.format(output, actual))
         if output > 0.5:
             output = 1.0
         else:
             output = 0.0
 
-        diff = abs(test.y[0] - output)
-        logging.debug('Correct output: ' + str(test.y[0]) + ', Our output: ' + str(output) + ', Error: ' + str(diff))
-        total_diff += diff
-        num_data += 1
+        if output == actual:
+            if actual == 1.0:
+                num_delay_correct += 1
+            else:
+                num_ontime_correct += 1
+        else:
+            if actual == 1.0:
+                num_delay_incorrect += 1
+            else:
+                num_ontime_incorrect += 1
 
-    average_error = total_diff / num_data
+    logging.info('Number of correct delayed flights was: ' + str(num_delay_correct))
+    logging.info('Number of incorrrect delay flights was: ' + str(num_delay_incorrect))
+    logging.info('Number of correct ontime flights was: ' + str(num_ontime_correct))
+    logging.info('Number of incorrect ontime flights was: ' + str(num_ontime_incorrect))
+
+    average_error = float(num_delay_incorrect + num_ontime_incorrect) / \
+                    (num_delay_correct + num_delay_incorrect + num_ontime_correct + num_ontime_incorrect)
     print 'Average accuracy was: ' + str(1.0 - average_error)
+    logging.info('Average accuracy was: ' + str(1.0 - average_error))
     print 'Average error was: ' + str(average_error)
+    logging.info('Average error was: ' + str(average_error))
 
 
 if __name__ == '__main__':

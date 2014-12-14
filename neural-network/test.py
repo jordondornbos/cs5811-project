@@ -97,7 +97,10 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
                     y.append(0.0)
 
             except ValueError:
-                logging.debug('Could not add {0}'.format(values))
+                logging.debug('Could not add {0} because of an invalid value'.format(values))
+                continue
+            except KeyError:
+                logging.debug('Could not find key for value in {0}'.format(values))
                 continue
 
             # add the Example object
@@ -200,9 +203,9 @@ def main():
     verification_data = get_data('../data/flight/2007_subset.csv', normalized_data[0], normalized_data[1],
                                  normalized_data[2], normalized_data[3])
 
-    for layer in range(1, 3):
-        for nodes in range(3, 9, 2):
-            logging.info('Testing with {0} layers and {1} nodes per layer'.format(layer, nodes))
+    for layer in range(1, 5, 2):
+        for nodes in range(3, 11, 2):
+            logging.info('Testing with {0} layer(s) and {1} nodes per layer'.format(layer, nodes))
             weights = None
             network = train(training_data, 0.3, 10000, layer, nodes, weights)
             test(network, verification_data)

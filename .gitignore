@@ -5,6 +5,8 @@ proposal-assignment.bbl
 proposal-assignment.blg
 auto/*
 data/weather
+data/flight/2004.csv
+data/flight/2007.csv
 neural-network/.idea/
 neural-network/neural-network.log
 neural-network/output.txt

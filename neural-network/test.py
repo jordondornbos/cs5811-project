@@ -202,6 +202,7 @@ def main():
 
     for layer in range(1, 3):
         for nodes in range(3, 9, 2):
+            logging.info('Testing with {0} layers and {1} nodes per layer'.format(layer, nodes))
             weights = None
             network = train(training_data, 0.3, 10000, layer, nodes, weights)
             test(network, verification_data)

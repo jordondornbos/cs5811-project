@@ -15,12 +15,13 @@ class MultilayerNetwork(object):
         self.num_output_nodes = num_output_nodes
 
         # create input layer
-        self.input_layer = layer.Layer(num_input_nodes, num_input_nodes)
+        self.input_layer = layer.Layer(num_input_nodes, 0)
 
         # create hidden layers
         self.hidden_layers = []
-        for i in range(num_hidden_layers):
-            self.hidden_layers.append(layer.Layer(num_nodes_per_hidden_layer, self.get_layer(i).num_nodes))
+        self.hidden_layers.append(layer.Layer(num_nodes_per_hidden_layer, num_input_nodes))
+        for i in range(num_hidden_layers - 1):
+            self.hidden_layers.append(layer.Layer(num_nodes_per_hidden_layer, num_nodes_per_hidden_layer))
 
         # create output layer
         self.output_layer = layer.Layer(num_output_nodes, num_nodes_per_hidden_layer)
@@ -62,18 +63,18 @@ class MultilayerNetwork(object):
         else:
             return None
 
-    def get_node_with_layer(self, l, j):
+    def get_node_in_layer(self, l, n):
         """Method to return a particular node in a certain layer.
 
         Args:
             l: The layer to get the node from.
-            j: The offset of the node in that layer.
+            n: The offset of the node in that layer.
 
         Returns:
             The node in the specified layer.
         """
 
-        return self.get_layer(l).nodes[j]
+        return self.get_layer(l).nodes[n]
 
     def position_in_network(self, l, n):
         """Method to return a node's position in the entire network.
@@ -102,8 +103,8 @@ class MultilayerNetwork(object):
         i = 0
         for l in range(1, self.num_layers()):
             for n in range(self.get_layer(l).num_nodes):
-                for w in range(len(self.get_node_with_layer(l, n).weights)):
-                    self.get_node_with_layer(l, n).weights[w] = weights[i]
+                for w in range(len(self.get_node_in_layer(l, n).weights)):
+                    self.get_node_in_layer(l, n).weights[w] = weights[i]
                     i += 1
 
     def print_weights(self, round=False):
@@ -116,7 +117,7 @@ class MultilayerNetwork(object):
         print "[",
         for l in range(1, self.num_layers()):
             for n in range(self.get_layer(l).num_nodes):
-                weights = self.get_node_with_layer(l, n).weights
+                weights = self.get_node_in_layer(l, n).weights
                 for w in range(len(weights)):
                     if round:
                         print '{0:.3f}'.format(weights[w]),
@@ -135,7 +136,7 @@ def sigmoid(x):
         The sigmoid value for x.
     """
 
-    return 1 / (1 + math.exp(-x))
+    return 1.0 / (1.0 + math.exp(-x))
 
 
 def sigmoid_derivative(x):
@@ -148,4 +149,4 @@ def sigmoid_derivative(x):
         The value of the sigmoid derivative function for a given x.
     """
 
-    return sigmoid(x) * (1 - sigmoid(x))
+    return sigmoid(x) * (1.0 - sigmoid(x))

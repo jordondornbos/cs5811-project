@@ -5,12 +5,13 @@ __author__ = "Jordon Dornbos"
 import random
 import hypothesis_network
 import multilayer_network
+import logging
+
+LOG_FILENAME = 'neural-network.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 
-iteration_count = 0
-
-
-def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights=None, verbose=False):
+def back_prop_learning(examples, network, alpha=0.3, iteration_max=5000000, weights=None, verbose=False):
     """Backpropagation algorithm for learning in multilayer networks.
 
     Args:
@@ -33,12 +34,15 @@ def back_prop_learning(examples, network, alpha=0.5, iteration_max=1000, weights
     else:
         randomize_weights(network, verbose=verbose)
 
-    while True:
+    # keep learning until stopping criterion is satisfied
+    iteration_count = 0
+    while iteration_count != iteration_max:
         learn_loop(delta, examples, network, alpha)
 
-        # loop until stopping criterion is satisfied
-        if stop_learning(iteration_max):
-            break
+        iteration_count += 1
+        logging.info('Neural network learning loop {0} of {1}'.format(iteration_count, iteration_max))
+
+        # TODO more stopping criteria
 
     return hypothesis_network.HypothesisNetwork(network)
 
@@ -52,9 +56,9 @@ def randomize_weights(network, verbose=False, round=False):
         round: Whether or not to round the printed weights.
     """
     for l in range(1, network.num_layers()):
-        for j in range(network.get_layer(l).num_nodes):
-            for w in range(len(network.get_node_with_layer(l, j).weights)):
-                network.get_node_with_layer(l, j).weights[w] = random.random()
+        for n in range(network.get_layer(l).num_nodes):
+            for w in range(len(network.get_node_in_layer(l, n).weights)):
+                network.get_node_in_layer(l, n).weights[w] = random.random()
 
     if verbose:
         print 'Randomized weights:'
@@ -75,9 +79,10 @@ def learn_loop(delta, examples, network, alpha):
         load_and_feed(example.x, network)
 
         # compute the error at the output
-        for j in range(network.output_layer.num_nodes):
-            delta[network.position_in_network(network.num_layers() - 1, j)] = multilayer_network.sigmoid_derivative(
-                network.output_layer.nodes[j].in_sum) * (example.y[j] - network.output_layer.nodes[j].output)
+        for n in range(network.output_layer.num_nodes):
+            delta[network.position_in_network(network.num_layers() - 1, n)] = \
+                multilayer_network.sigmoid_derivative(network.output_layer.nodes[n].in_sum) * \
+                (example.y[n] - network.output_layer.nodes[n].output)
 
         # propagate the deltas backward from output layer to input layer
         delta_propagation(delta, network)
@@ -110,16 +115,16 @@ def feed_forward(network):
     """
 
     for l in range(1, network.num_layers()):
-        for j in range(network.get_layer(l).num_nodes):
-            node = network.get_node_with_layer(l, j)
+        for n in range(network.get_layer(l).num_nodes):
+            node = network.get_node_in_layer(l, n)
 
-            summation = 0
+            summation = 0.0
             for i in range(node.num_inputs):
-                summation += node.weights[i] * network.get_node_with_layer(l - 1, i).output
+                summation += node.weights[i] * network.get_node_in_layer(l - 1, i).output
             summation += node.weights[len(node.weights) - 1]    # bias input
 
-            network.get_node_with_layer(l, j).in_sum = summation
-            network.get_node_with_layer(l, j).output = multilayer_network.sigmoid(summation)
+            network.get_node_in_layer(l, n).in_sum = summation
+            network.get_node_in_layer(l, n).output = multilayer_network.sigmoid(summation)
 
 
 def delta_propagation(delta, network):
@@ -129,17 +134,17 @@ def delta_propagation(delta, network):
         delta: A list of all the delta values for the network.
         network: A multilayer network with L layers, weights W(j,i), activation function g.
     """
-
+    # TODO check
     for l in range(network.num_layers() - 2, 0, -1):
-        for i in range(network.get_layer(l).num_nodes):
-            summation = 0
+        for n in range(network.get_layer(l).num_nodes):
+            summation = 0.0
             next_layer_nodes = network.get_layer(l + 1).nodes
-            for j in range(len(next_layer_nodes)):
-                summation += next_layer_nodes[j].weights[i] * delta[network.position_in_network(l + 1, j)]
+            for nln in range(len(next_layer_nodes)):
+                summation += next_layer_nodes[nln].weights[n] * delta[network.position_in_network(l + 1, nln)]
 
             # "blame" a node as much as its weight
-            delta[network.position_in_network(l, i)] = multilayer_network.sigmoid_derivative(
-                network.get_node_with_layer(l, i).in_sum) * summation
+            delta[network.position_in_network(l, n)] = \
+                multilayer_network.sigmoid_derivative(network.get_node_in_layer(l, n).in_sum) * summation
 
 
 def update_weights(delta, network, alpha):
@@ -150,32 +155,12 @@ def update_weights(delta, network, alpha):
         network: A multilayer network with L layers, weights W(j,i), activation function g.
         alpha: The learning rate.
     """
-
+    # TODO check
     for l in range(1, network.num_layers()):
-        for j in range(network.get_layer(l).num_nodes):
+        for n in range(network.get_layer(l).num_nodes):
             # adjust the weights
-            node = network.get_node_with_layer(l, j)
+            node = network.get_node_in_layer(l, n)
             for i in range(node.num_inputs):
-                node.weights[i] += alpha * network.get_node_with_layer(l - 1, i).output * delta[
-                    network.position_in_network(l, j)]
-            node.weights[len(node.weights) - 1] += alpha * delta[network.position_in_network(l, j)]   # bias input
-
-
-def stop_learning(iteration_max):
-    """Method to determine when to stop learning.
-
-    Args:
-        iteration_max: The maximum amount of iterations to perform.
-
-    Returns:
-        A boolean for whether or not to stop.
-    """
-
-    # timeout reached
-    global iteration_count
-    iteration_count += 1
-    if iteration_count == iteration_max:
-        return True
-
-    # otherwise, keep going
-    return False
+                node.weights[i] += alpha * network.get_node_in_layer(l - 1, i).output * \
+                                   delta[network.position_in_network(l, n)]
+            node.weights[len(node.weights) - 1] += alpha * delta[network.position_in_network(l, n)]   # bias input

@@ -1,8 +1,12 @@
-auto/*
+*.pyc
 proposal-assignment.log
 proposal-assignment.aux
 proposal-assignment.bbl
 proposal-assignment.blg
-*.pyc
+auto/*
+data/weather
+data/flight/2004.csv
+data/flight/2007.csv
 neural-network/.idea/
-/data/weather
+neural-network/neural-network.log
+neural-network/output.txt

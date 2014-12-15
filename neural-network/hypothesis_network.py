@@ -22,11 +22,11 @@ class HypothesisNetwork(object):
 
         # load in the input and propagate it thought the network
         back_prop_learning.load_and_feed(input, self.network)
-        output = self.network.output_layer
+        output_layer = self.network.output_layer
 
         # put the output in an array (in case the output is multi-dimensional)
-        ret = []
-        for i in range(output.num_nodes):
-            ret.append(output.nodes[i].output)
+        output = []
+        for i in range(output_layer.num_nodes):
+            output.append(output_layer.nodes[i].output)
 
-        return ret
+        return output

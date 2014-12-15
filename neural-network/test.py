@@ -198,10 +198,13 @@ def main():
     normalized_data = get_normalized_data('../data/normalized/2004_output.txt')
     training_data = get_data('../data/flight/2004_subset.csv', normalized_data[0], normalized_data[1],
                              normalized_data[2], normalized_data[3])
-    training_data = shuffle(training_data)
     normalized_data = get_normalized_data('../data/normalized/2007_output.txt')
     verification_data = get_data('../data/flight/2007_subset.csv', normalized_data[0], normalized_data[1],
                                  normalized_data[2], normalized_data[3])
+
+    # get the same amount of delayed and ontime flights to avoid a bias
+    training_data = shuffle(training_data)
+    verification_data = shuffle(verification_data)
 
     for layer in range(1, 5, 2):
         for nodes in range(3, 11, 2):

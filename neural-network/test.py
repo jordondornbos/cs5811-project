@@ -7,6 +7,7 @@ import back_prop_learning
 import multilayer_network
 import re
 import logging
+from random import shuffle
 
 LOG_FILENAME = 'neural-network.log'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
@@ -113,6 +114,30 @@ def get_data(filename, time_map, distance_map, carrier_map, airport_map):
     return data
 
 
+def filter(training_data):
+    filtered = []
+
+    pos = 0
+    neg = 0
+    data = len(training_data)
+    pick_pos = True
+    while pos < data and neg < data:
+        if pick_pos:
+            if training_data[pos].y[0] == 1.0:
+                logging.debug('Adding positive set')
+                filtered.append(training_data[pos])
+                pick_pos = False
+            pos += 1
+        else:
+            if training_data[neg].y[0] == 0.0:
+                logging.debug('Adding negative set')
+                filtered.append(training_data[neg])
+                pick_pos = True
+            neg += 1
+
+    return filtered
+
+
 def train(examples, alpha, iteration_max, num_hidden_layers, num_nodes_per_hidden_layer, weights=None, verbose=False):
     # create the network
     logging.info('Creating neural network...')
@@ -135,8 +160,8 @@ def test(network, verification_data):
     logging.info('Testing accuracy...')
     num_delay_correct = 0
     num_delay_incorrect = 0
-    num_ontime_correct = 0
-    num_ontime_incorrect = 0
+    num_on_time_correct = 0
+    num_on_time_incorrect = 0
     for test in verification_data:
         output = network.guess(test.x)[0]
         actual = test.y[0]
@@ -150,46 +175,22 @@ def test(network, verification_data):
             if actual == 1.0:
                 num_delay_correct += 1
             else:
-                num_ontime_correct += 1
+                num_on_time_correct += 1
         else:
             if actual == 1.0:
                 num_delay_incorrect += 1
             else:
-                num_ontime_incorrect += 1
+                num_on_time_incorrect += 1
 
     logging.info('Number of correct delayed flight predictions was: ' + str(num_delay_correct))
     logging.info('Number of incorrrect delay flight predictions was: ' + str(num_delay_incorrect))
-    logging.info('Number of correct ontime flight predictions was: ' + str(num_ontime_correct))
-    logging.info('Number of incorrect ontime flight predictions was: ' + str(num_ontime_incorrect))
+    logging.info('Number of correct on time flight predictions was: ' + str(num_on_time_correct))
+    logging.info('Number of incorrect on time flight predictions was: ' + str(num_on_time_incorrect))
 
-    average_error = float(num_delay_incorrect + num_ontime_incorrect) / \
-                    (num_delay_correct + num_delay_incorrect + num_ontime_correct + num_ontime_incorrect)
+    average_error = float(num_delay_incorrect + num_on_time_incorrect) / \
+                    (num_delay_correct + num_delay_incorrect + num_on_time_correct + num_on_time_incorrect)
     logging.info('Average accuracy was: {0:.3f}'.format(1.0 - average_error))
     logging.info('Average error was: {0:.3f}'.format(average_error))
-
-
-def shuffle(training_data):
-    shuffled = []
-
-    pos = 0
-    neg = 0
-    data = len(training_data)
-    pick_pos = True
-    while pos < data and neg < data:
-        if pick_pos:
-            if training_data[pos].y[0] == 1.0:
-                logging.debug('Adding positive set')
-                shuffled.append(training_data[pos])
-                pick_pos = False
-            pos += 1
-        else:
-            if training_data[neg].y[0] == 0.0:
-                logging.debug('Adding negative set')
-                shuffled.append(training_data[neg])
-                pick_pos = True
-            neg += 1
-
-    return shuffled
 
 
 def main():
@@ -202,9 +203,10 @@ def main():
     verification_data = get_data('../data/flight/2007_subset.csv', normalized_data[0], normalized_data[1],
                                  normalized_data[2], normalized_data[3])
 
-    # get the same amount of delayed and ontime flights to avoid a bias
-    training_data = shuffle(training_data)
-    verification_data = shuffle(verification_data)
+    # get the same amount of delayed and on time flights to avoid a bias
+    shuffle(training_data)
+    training_data = filter(training_data)
+    verification_data = filter(verification_data)
 
     for layer in range(1, 5, 2):
         for nodes in range(3, 11, 2):
